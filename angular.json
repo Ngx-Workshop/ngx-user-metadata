@@ -3,5 +3,34 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "ngx-user-metadata": {
+      "projectType": "library",
+      "root": "projects/ngx-user-metadata",
+      "sourceRoot": "projects/ngx-user-metadata/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-user-metadata/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-user-metadata/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/ngx-user-metadata/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "279e2578-159c-4224-8ec3-32e81267c7c1"
   }
 }
