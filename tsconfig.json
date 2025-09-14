@@ -32,6 +32,12 @@
     },
     {
       "path": "./projects/ngx-user-metadata/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/ngx-user-metadata-demo/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/ngx-user-metadata-demo/tsconfig.spec.json"
     }
   ]
 }

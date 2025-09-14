@@ -4,8 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "demo:build": "ng build ngx-user-metadata-demo --configuration production --base-href \"/ngx-user-metadata/\"",
+    "watch-demo": "ng serve ngx-user-metadata-demo",
+    "ngx-user-metadata:build": "ng build ngx-user-metadata --configuration production",
+    "ngx-user-metadata:watch": "ng build ngx-user-metadata --watch --configuration development",
+    "deployDemo": "npx angular-cli-ghpages --dir=dist/ngx-user-metadata-demo/browser",
     "test": "ng test"
   },
   "private": true,
@@ -23,6 +26,7 @@
     "@angular/build": "^20.3.1",
     "@angular/cli": "^20.0.3",
     "@angular/compiler-cli": "^20.0.0",
+    "@tmdjr/user-metadata-contracts": "^0.0.7",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.7.0",
     "karma": "~6.4.0",
