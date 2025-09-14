@@ -37,8 +37,15 @@ export class NgxUserMetadataService {
    */
   fetchUserAuthenticatedStatus(): Observable<{ authenticated: boolean }> {
     return this.http
-      .get<{ authenticated: boolean }>('/api/auth/')
+      .get<{ authenticated: boolean }>('/api/auth/validate-access-token')
       .pipe(
+        // log
+        tap((response) =>
+          console.log(
+            '[NgxUserMetadata] Fetched authentication status:',
+            response
+          )
+        ),
         tap(({ authenticated }) => this._userAuthenticated.set(authenticated))
       );
   }
@@ -49,7 +56,7 @@ export class NgxUserMetadataService {
    */
   fetchUserMetadata(): Observable<UserMetadataDto> {
     return this.http
-      .get<UserMetadataDto>('/api/metadata/')
+      .get<UserMetadataDto>('/api/user-metadata/')
       .pipe(tap((metadata) => this._userMetadata.set(metadata)));
   }
 
