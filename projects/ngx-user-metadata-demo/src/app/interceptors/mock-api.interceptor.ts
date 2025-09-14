@@ -51,7 +51,7 @@ export const mockApiInterceptor: HttpInterceptorFn = (
     return of(
       new HttpResponse({
         status: 200,
-        body: { authenticated: true },
+        body: true,
       })
     ).pipe(delay(300));
   }

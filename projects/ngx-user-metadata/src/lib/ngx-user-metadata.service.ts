@@ -35,19 +35,17 @@ export class NgxUserMetadataService {
    * NOTE: We do **not** clear metadata here, since the app redirects on 401/403
    * to a different domain; keeping cached metadata avoids jitter during redirects.
    */
-  fetchUserAuthenticatedStatus(): Observable<{ authenticated: boolean }> {
-    return this.http
-      .get<{ authenticated: boolean }>('/api/auth/validate-access-token')
-      .pipe(
-        // log
-        tap((response) =>
-          console.log(
-            '[NgxUserMetadata] Fetched authentication status:',
-            response
-          )
-        ),
-        tap(({ authenticated }) => this._userAuthenticated.set(authenticated))
-      );
+  fetchUserAuthenticatedStatus(): Observable<boolean> {
+    return this.http.get<boolean>('/api/auth/validate-access-token').pipe(
+      // log
+      tap((response) =>
+        console.log(
+          '[NgxUserMetadata] Fetched authentication status:',
+          response
+        )
+      ),
+      tap((authenticated) => this._userAuthenticated.set(authenticated))
+    );
   }
 
   /**

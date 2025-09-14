@@ -29,7 +29,7 @@ function ensureAuthenticated$() {
   const doc = inject(DOCUMENT);
 
   return service.fetchUserAuthenticatedStatus().pipe(
-    map(({ authenticated }) => {
+    map((authenticated) => {
       if (authenticated) return true;
       redirectToLogin(service, doc);
       return false;
