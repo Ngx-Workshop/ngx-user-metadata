@@ -30,11 +30,16 @@ function ensureAuthenticated$() {
 
   return service.fetchUserAuthenticatedStatus().pipe(
     map((authenticated) => {
+      console.log('[NgxUserMetadata] Authenticated?', authenticated);
       if (authenticated) return true;
+      console.log('[NgxUserMetadata] Redirecting to login...');
       redirectToLogin(service, doc);
       return false;
     }),
     catchError(() => {
+      console.log(
+        '[NgxUserMetadata] Error fetching authentication status; redirecting to login...'
+      );
       redirectToLogin(service, doc);
       return of(false);
     })
