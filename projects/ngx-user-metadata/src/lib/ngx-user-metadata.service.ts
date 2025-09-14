@@ -3,12 +3,18 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { UserMetadataDto } from '@tmdjr/user-metadata-contracts';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import {
+  DEFAULT_CONFIG,
+  NGX_USER_METADATA_CONFIG,
+} from './config/ngx-user-metadata.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NgxUserMetadataService {
   private http = inject(HttpClient);
+  private config =
+    inject(NGX_USER_METADATA_CONFIG, { optional: true }) ?? DEFAULT_CONFIG;
 
   // Writable signals (kept private) + public readonly views
   private _userAuthenticated = signal(false);
@@ -74,5 +80,12 @@ export class NgxUserMetadataService {
   /** Force-refresh helpers */
   invalidateUserMetadata(): void {
     this._userMetadata.set(null);
+  }
+
+  /**
+   * Get the configured redirect URL for authentication failures
+   */
+  getRedirectUrl(): string {
+    return this.config.redirectUrl ?? DEFAULT_CONFIG.redirectUrl!;
   }
 }

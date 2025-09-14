@@ -5,12 +5,19 @@ import { catchError, map, of } from 'rxjs';
 import { NgxUserMetadataService } from '../ngx-user-metadata.service';
 
 /**
- * Redirect the browser to the centralized auth app with a `redirect` back param.
+ * Redirect the browser to the configured auth URL with a `redirect` back param.
  */
-function redirectToLogin(doc: Document, fallback: string = '/') {
+function redirectToLogin(
+  service: NgxUserMetadataService,
+  doc: Document,
+  fallback: string = '/'
+) {
   const href = doc?.defaultView?.location?.href ?? fallback;
   const redirect = encodeURIComponent(href);
-  const loginUrl = `https://auth.ngx-workshop.io/?redirect=${redirect}`;
+  const baseRedirectUrl = service.getRedirectUrl();
+  const loginUrl = baseRedirectUrl.includes('?')
+    ? `${baseRedirectUrl}&redirect=${redirect}`
+    : `${baseRedirectUrl}?redirect=${redirect}`;
   doc.defaultView?.location?.assign(loginUrl);
 }
 
@@ -24,11 +31,11 @@ function ensureAuthenticated$() {
   return service.fetchUserAuthenticatedStatus().pipe(
     map(({ authenticated }) => {
       if (authenticated) return true;
-      redirectToLogin(doc);
+      redirectToLogin(service, doc);
       return false;
     }),
     catchError(() => {
-      redirectToLogin(doc);
+      redirectToLogin(service, doc);
       return of(false);
     })
   );

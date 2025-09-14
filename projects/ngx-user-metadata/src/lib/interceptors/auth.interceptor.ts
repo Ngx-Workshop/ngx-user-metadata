@@ -1,7 +1,13 @@
+import { DOCUMENT } from '@angular/common';
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
+import { NgxUserMetadataService } from '../ngx-user-metadata.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const service = inject(NgxUserMetadataService);
+  const doc = inject(DOCUMENT);
+
   // Handle the request and potential errors
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -10,11 +16,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         case 401:
           // Unauthorized - token expired or invalid
           console.warn('Unauthorized request - redirecting to login');
+          redirectToLogin(service, doc);
           break;
 
         case 403:
           // Forbidden - user doesn't have permission
-          console.warn('Forbidden request - insufficient permissions');
+          console.warn('Forbidden request - redirecting to login');
+          redirectToLogin(service, doc);
           break;
 
         case 0:
@@ -36,3 +44,20 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     })
   );
 };
+
+/**
+ * Redirect to the configured login URL
+ */
+function redirectToLogin(
+  service: NgxUserMetadataService,
+  doc: Document,
+  fallback: string = '/'
+) {
+  const href = doc?.defaultView?.location?.href ?? fallback;
+  const redirect = encodeURIComponent(href);
+  const baseRedirectUrl = service.getRedirectUrl();
+  const loginUrl = baseRedirectUrl.includes('?')
+    ? `${baseRedirectUrl}&redirect=${redirect}`
+    : `${baseRedirectUrl}?redirect=${redirect}`;
+  doc.defaultView?.location?.assign(loginUrl);
+}

@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "demo:build": "ng build ngx-user-metadata-demo --configuration production --base-href \"/ngx-user-metadata/\"",
-    "watch-demo": "ng serve ngx-user-metadata-demo",
+    "demo:watch": "ng serve ngx-user-metadata-demo",
     "ngx-user-metadata:build": "ng build ngx-user-metadata --configuration production",
     "ngx-user-metadata:watch": "ng build ngx-user-metadata --watch --configuration development",
     "deployDemo": "npx angular-cli-ghpages --dir=dist/ngx-user-metadata-demo/browser",
