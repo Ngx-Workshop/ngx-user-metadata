@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common';
 import { inject } from '@angular/core';
 import { CanActivateFn, CanMatchFn } from '@angular/router';
-import { catchError, map, of } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 import { NgxUserMetadataService } from '../ngx-user-metadata.service';
 
 /**
@@ -29,17 +29,19 @@ function ensureAuthenticated$() {
   const doc = inject(DOCUMENT);
 
   return service.fetchUserAuthenticatedStatus().pipe(
-    map((authenticated) => {
-      console.log('[NgxUserMetadata] Authenticated?', authenticated);
-      if (authenticated) return true;
-      console.log('[NgxUserMetadata] Redirecting to login...');
-      redirectToLogin(service, doc);
-      return false;
+    switchMap((authenticated) => {
+      if (!authenticated) {
+        redirectToLogin(service, doc);
+        return of(false);
+      }
+      // User is authenticated: ensure we have metadata (non-blocking for route activation)
+      return service.fetchUserMetadataIfNeeded().pipe(
+        map(() => true),
+        // Metadata fetch failure should not block navigation if already authenticated
+        catchError(() => of(true))
+      );
     }),
     catchError(() => {
-      console.log(
-        '[NgxUserMetadata] Error fetching authentication status; redirecting to login...'
-      );
       redirectToLogin(service, doc);
       return of(false);
     })
