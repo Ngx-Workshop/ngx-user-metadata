@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { UserMetadataDto } from '@tmdjr/user-metadata-contracts';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
   DEFAULT_CONFIG,
@@ -22,6 +22,10 @@ export class NgxUserMetadataService {
 
   private _userMetadata = signal<UserMetadataDto | null>(null);
   readonly userMetadata = this._userMetadata.asReadonly();
+  private userMetadataSubject = new BehaviorSubject<UserMetadataDto | null>(
+    null
+  );
+  readonly userMetadata$ = this.userMetadataSubject.asObservable();
 
   // Optional convenience computed for consumers that want a single read
   readonly vm = computed(() => ({
@@ -53,9 +57,12 @@ export class NgxUserMetadataService {
    * Updates the `userMetadata` signal.
    */
   fetchUserMetadata(): Observable<UserMetadataDto> {
-    return this.http
-      .get<UserMetadataDto>('/api/user-metadata/')
-      .pipe(tap((metadata) => this._userMetadata.set(metadata)));
+    return this.http.get<UserMetadataDto>('/api/user-metadata/').pipe(
+      tap((metadata) => {
+        this._userMetadata.set(metadata);
+        this.userMetadataSubject.next(metadata);
+      })
+    );
   }
 
   /**
@@ -80,11 +87,13 @@ export class NgxUserMetadataService {
 
   setUserMetadata(metadata: UserMetadataDto | null): void {
     this._userMetadata.set(metadata);
+    this.userMetadataSubject.next(metadata);
   }
 
   /** Force-refresh helpers */
   invalidateUserMetadata(): void {
     this._userMetadata.set(null);
+    this.userMetadataSubject.next(null);
   }
 
   /**

@@ -1,6 +1,6 @@
 {
   "name": "@tmdjr/ngx-user-metadata",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "peerDependencies": {
     "@angular/common": "^20.1.0",
     "@angular/core": "^20.1.0"
