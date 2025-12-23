@@ -58,7 +58,7 @@ export const userAuthenticatedGuard: CanActivateFn = () =>
  * Guard that ensures the user is authenticated (route activation) but doesn't redirect.
  */
 export const checkUserAuthenticatedGuard: CanActivateFn = () =>
-  ensureAuthenticated$();
+  ensureAuthenticated$(false);
 
 /**
  * Guard that ensures the user is authenticated (route matching for lazy routes).
