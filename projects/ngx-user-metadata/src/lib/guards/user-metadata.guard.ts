@@ -30,7 +30,7 @@ function ensureAuthenticated$(redirect = true) {
 
   return service.fetchUserAuthenticatedStatus().pipe(
     switchMap((authenticated) => {
-      if (!authenticated) {
+      if (!authenticated && redirect) {
         redirect && redirectToLogin(service, doc);
         return of(false);
       }
@@ -55,13 +55,27 @@ export const userAuthenticatedGuard: CanActivateFn = () =>
   ensureAuthenticated$();
 
 /**
- * Guard that ensures the user is authenticated (route activation) but doesn't redirect.
- */
-export const checkUserAuthenticatedGuard: CanActivateFn = () =>
-  ensureAuthenticated$(false);
-
-/**
  * Guard that ensures the user is authenticated (route matching for lazy routes).
  */
 export const userAuthenticatedMatchGuard: CanMatchFn = () =>
   ensureAuthenticated$();
+
+/**
+ * Guard that ensures the user is authenticated (route activation) but doesn't redirect.
+ */
+export const checkUserAuthenticatedGuard: CanActivateFn = () => {
+  const service = inject(NgxUserMetadataService);
+
+  return service.fetchUserAuthenticatedStatus().pipe(
+    switchMap((authenticated) => {
+      if (!authenticated) {
+        return of(true);
+      }
+      return service
+        .fetchUserMetadataIfNeeded()
+        .pipe(catchError(() => of(true)));
+    }),
+    map(() => true),
+    catchError(() => of(true))
+  );
+};
