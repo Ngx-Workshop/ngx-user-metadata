@@ -24,14 +24,14 @@ function redirectToLogin(
 /**
  * Shared logic used by both CanActivate and CanMatch guards.
  */
-function ensureAuthenticated$() {
+function ensureAuthenticated$(redirect = true) {
   const service = inject(NgxUserMetadataService);
   const doc = inject(DOCUMENT);
 
   return service.fetchUserAuthenticatedStatus().pipe(
     switchMap((authenticated) => {
       if (!authenticated) {
-        redirectToLogin(service, doc);
+        redirect && redirectToLogin(service, doc);
         return of(false);
       }
       // User is authenticated: ensure we have metadata (non-blocking for route activation)
@@ -52,6 +52,12 @@ function ensureAuthenticated$() {
  * Guard that ensures the user is authenticated (route activation).
  */
 export const userAuthenticatedGuard: CanActivateFn = () =>
+  ensureAuthenticated$();
+
+/**
+ * Guard that ensures the user is authenticated (route activation) but doesn't redirect.
+ */
+export const checkUserAuthenticatedGuard: CanActivateFn = () =>
   ensureAuthenticated$();
 
 /**
